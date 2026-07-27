@@ -83,12 +83,13 @@ impl DocRepository for FsStorage {
 
     async fn list_docs(&self, _include_deleted: bool) -> anyhow::Result<Vec<DocMeta>> {
         let docs_map = self.load_docs_map();
-        let docs: Vec<DocMeta> = docs_map
+        let mut docs: Vec<DocMeta> = docs_map
             .docs
             .into_iter()
             .filter(|(_, doc)| !doc.deleted && !doc.deprecated)
             .map(|(id, doc)| DocMeta { id, ..doc })
             .collect();
+        docs.sort_by(|a, b| b.created_at.cmp(&a.created_at));
         Ok(docs)
     }
 
