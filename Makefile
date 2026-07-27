@@ -1,38 +1,40 @@
-.PHONY: setup install-hooks build build-frontend build-backend docs publish-docs deploy sync-docs fetch-docs
+.PHONY: build dev deploy deploy-docs deploy-full deploy-nginx clean
 
+# ---- 初始化 ----
 setup:
-	@echo "Run scripts/setup_dev_env.sh to see required tools."
-	@echo "To auto-install on macOS: scripts/setup_dev_env.sh --install"
+	npm install
 
-install-hooks:
-	bash scripts/git-hooks/install.sh
+# ---- 开发 ----
+dev:
+	npm run dev
 
-build: build-frontend build-backend
+# ---- 构建 ----
+build:
+	rm -rf dist
+	npm run build
+	cd backend && cargo build --release
 
 build-frontend:
-	npm install
+	rm -rf dist
 	npm run build
 
 build-backend:
-	cd backend && cargo build
+	cd backend && cargo build --release
 
-docs:
-	cd backend && cargo doc --no-deps
-
-publish-docs:
-	cd backend && cargo doc --no-deps
-	# publish to gh-pages using a worktree
-	rm -rf .gh-pages || true
-	git worktree add -B gh-pages .gh-pages gh-pages || true
-	rsync -a --delete backend/target/doc/ .gh-pages/
-	cd .gh-pages && git add -A && git commit -m "Publish docs (cargo doc)" || echo "No changes to commit"
-	git push -u origin gh-pages --force
-
+# ---- 部署 ----
 deploy:
 	./deploy.sh
 
-sync-docs:
-	./sync-docs.sh
+deploy-docs:
+	./deploy.sh docs
 
-fetch-docs:
-	./fetch-docs.sh
+deploy-full:
+	./deploy.sh full
+
+deploy-nginx:
+	./deploy.sh nginx
+
+# ---- 清理 ----
+clean:
+	rm -rf dist
+	cd backend && cargo clean
