@@ -16,7 +16,7 @@ pub fn load_site_name(config_dir: &PathBuf) -> String {
             }
         }
     }
-    "25 电科 3 班待办事项清单".to_string()
+    "易海的算子工坊-备忘录".to_string()
 }
 
 /// Load the admin sequence from `sequence.json` in `config_dir`.

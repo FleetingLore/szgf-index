@@ -59,7 +59,7 @@ curl http://127.0.0.1:3001/api/cats
       "created_at": 1782165910244
     }
   ],
-  "siteName": "25 电科 3 班待办事项清单"
+  "siteName": "易海的算子工坊  备忘录"
 }
 ```
 
@@ -611,7 +611,7 @@ curl http://127.0.0.1:3001/api/locales/zh-CN
   "data": {
     "@meta.name": "简体中文",
     "@meta.dir": "ltr",
-    "site.title": "25 电科 3 班待办事项清单",
+    "site.title": "易海的算子工坊  备忘录",
     "doc.status.loading": "加载中...",
     "doc.action.upload": "上传"
   }

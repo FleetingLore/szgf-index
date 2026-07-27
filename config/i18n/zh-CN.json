@@ -1,15 +1,12 @@
 {
     "@meta.name": "简体中文",
     "@meta.dir": "ltr",
-
-    "site.title": "25 电科 3 班待办事项清单",
-
+    "site.title": "易海的算子工坊  备忘录",
     "doc.status.loading": "加载中...",
     "doc.status.empty": "暂无文档，点击上传",
     "doc.status.deprecated": "此文档已弃用",
     "doc.status.locked": "文档已上锁",
     "doc.status.content_lost": "文档内容丢失",
-
     "doc.action.restore": "恢复",
     "doc.action.delete": "删除",
     "doc.action.confirm_delete": "确认删除",
@@ -18,17 +15,13 @@
     "doc.action.upload": "上传",
     "doc.action.lock": "锁定",
     "doc.action.unlock": "解锁",
-
     "doc.upload.only_md": "请上传 .md 文件",
     "doc.upload.title_hint": "上传文档",
-
     "admin.title": "管理面板",
     "admin.button_home": "首页",
     "admin.error.invalid_seq": "序列错误，请重试",
-
     "auth.session_expired": "会话已过期",
     "auth.login_success": "登录成功",
-
     "error.not_found": "文档未找到",
     "error.server_error": "服务器错误",
     "error.generic": "操作失败"

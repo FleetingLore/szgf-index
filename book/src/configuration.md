@@ -22,7 +22,7 @@
 
 ```json
 {
-  "name": "25 电科 3 班待办事项清单"
+  "name": "易海的算子工坊  备忘录"
 }
 ```
 
@@ -213,7 +213,7 @@ superadmin
   "@meta.name": "简体中文",
   "@meta.dir": "ltr",
 
-  "site.title": "25 电科 3 班待办事项清单",
+  "site.title": "易海的算子工坊  备忘录",
 
   "doc.status.loading": "加载中...",
   "doc.status.empty": "暂无文档，点击上传",
