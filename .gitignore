@@ -61,3 +61,5 @@ public/ducia_wasm_bg.wasm
 .gh-pages/
 book/book/
 .gh-pages/
+
+temp/

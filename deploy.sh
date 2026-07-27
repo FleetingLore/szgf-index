@@ -98,18 +98,14 @@ ssh -p "$SSH_PORT" "${REMOTE_USER}@${SERVER}" << 'ENDSSH'
 set -e
 cd /var/www/szgf
 
-# 备份用户数据
-for f in docs.json auth.json sequence.json roles.json settings.json site.json; do
-    [ -f "config/$f" ] && cp "config/$f" "/tmp/$f.bak" || true
-done
+# 备份用户数据（仅 docs.json）
+[ -f config/docs.json ] && cp config/docs.json /tmp/docs.json.bak || true
 
 # 解压
 tar -xzf /tmp/szgf-deploy.tar.gz
 
 # 恢复用户数据
-for f in docs.json auth.json sequence.json roles.json settings.json site.json; do
-    [ -f "/tmp/$f.bak" ] && mv "/tmp/$f.bak" "config/$f" || true
-done
+[ -f /tmp/docs.json.bak ] && mv /tmp/docs.json.bak config/docs.json || true
 mkdir -p docs data
 
 # 编译后端
@@ -124,7 +120,7 @@ sleep 1
 nohup ./backend/target/release/ducia-server > /tmp/szgf-server.log 2>&1 &
 
 # 清理
-rm -f /tmp/szgf-deploy.tar.gz /tmp/*.json.bak
+rm -f /tmp/szgf-deploy.tar.gz /tmp/docs.json.bak
 ENDSSH
 
 ok "服务器端更新完成"
