@@ -1,0 +1,331 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>CI / CD 工作流 - Ducia 开发手册</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Ducia Listing Framework — 轻量级文档管理系统">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">简介</a></li><li class="chapter-item expanded affix "><a href="getting-started.html">快速开始</a></li><li class="chapter-item expanded affix "><li class="part-title">架构</li><li class="chapter-item expanded "><a href="architecture.html"><strong aria-hidden="true">1.</strong> 系统架构</a></li><li class="chapter-item expanded "><a href="plugins.html"><strong aria-hidden="true">2.</strong> 插件系统</a></li><li class="chapter-item expanded "><a href="permissions.html"><strong aria-hidden="true">3.</strong> 权限模型</a></li><li class="chapter-item expanded "><a href="i18n.html"><strong aria-hidden="true">4.</strong> 国际化</a></li><li class="chapter-item expanded affix "><li class="part-title">后端</li><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">5.</strong> 配置参考</a></li><li class="chapter-item expanded "><a href="api-reference.html"><strong aria-hidden="true">6.</strong> API 参考</a></li><li class="chapter-item expanded "><a href="storage.html"><strong aria-hidden="true">7.</strong> 存储后端</a></li><li class="chapter-item expanded "><a href="authentication.html"><strong aria-hidden="true">8.</strong> 认证后端</a></li><li class="chapter-item expanded affix "><li class="part-title">前端</li><li class="chapter-item expanded "><a href="frontend.html"><strong aria-hidden="true">9.</strong> 前端架构</a></li><li class="chapter-item expanded "><a href="typescript.html"><strong aria-hidden="true">10.</strong> TypeScript 类型</a></li><li class="chapter-item expanded affix "><li class="part-title">开发</li><li class="chapter-item expanded "><a href="development.html"><strong aria-hidden="true">11.</strong> 开发环境</a></li><li class="chapter-item expanded "><a href="ci-cd.html" class="active"><strong aria-hidden="true">12.</strong> CI / CD 工作流</a></li><li class="chapter-item expanded "><a href="wasm.html"><strong aria-hidden="true">13.</strong> WASM 构建</a></li><li class="chapter-item expanded affix "><li class="part-title">部署</li><li class="chapter-item expanded "><a href="deployment.html"><strong aria-hidden="true">14.</strong> 服务器部署</a></li><li class="chapter-item expanded affix "><a href="changelog.html">变更日志</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Ducia 开发手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/FleetingLore/ducia-listing-framework" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/FleetingLore/ducia-listing-framework/edit/main/book/src/src/ci-cd.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="ci--cd-工作流"><a class="header" href="#ci--cd-工作流">CI / CD 工作流</a></h1>
+<p>项目通过 GitHub Actions 实现自动化构建、文档部署和 crates.io 发布。所有工作流定义在 <code>.github/workflows/</code> 目录下。</p>
+<hr />
+<h2 id="工作流总览"><a class="header" href="#工作流总览">工作流总览</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>文件</th><th>触发条件</th><th>做什么</th></tr></thead><tbody>
+<tr><td><code>ci.yml</code></td><td>push main/indev、PR、手动</td><td>编译检查 → Docker 构建 → 手动确认部署</td></tr>
+<tr><td><code>pages.yml</code></td><td>push main/indev（仅 <code>book/</code> 变更）、手动</td><td>mdBook 构建 → 部署到 GitHub Pages</td></tr>
+<tr><td><code>publish.yml</code></td><td>推送版本 tag（如 <code>v0.2.0</code>）、手动</td><td>按顺序发布 crate 到 crates.io</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="ciciyml"><a class="header" href="#ciciyml">CI（ci.yml）</a></h2>
+<pre><code>push / PR / 手动触发
+  │
+  ├── [1] backend   cargo check（后端编译检查）
+  ├── [2] frontend  npm ci + npm run build（前端构建检查）
+  ├── [3] docker    docker compose build（镜像构建验证）
+  └── [4] approve   🛑 手动确认（仅 main/indev 分支 push 时触发）
+</code></pre>
+<p><strong>手动确认机制</strong>：第 4 步 <code>approve-deploy</code> 使用 <code>environment: production</code>。在 GitHub 仓库 Settings → Environments 中创建 <code>production</code> 环境，勾选 <strong>Required reviewers</strong>，每次部署前需人工点 Approve。</p>
+<p>也可在 Actions 页面手动触发（<code>workflow_dispatch</code>），跳过 push 条件。</p>
+<h3 id="运行测试"><a class="header" href="#运行测试">运行测试</a></h3>
+<p>CI 目前只做编译检查，不含单元测试。如需添加测试步骤，在 <code>backend</code> job 中追加：</p>
+<pre><code class="language-yaml">- name: cargo test
+  run: cargo test --workspace
+  working-directory: backend/server
+</code></pre>
+<hr />
+<h2 id="pagespagesyml"><a class="header" href="#pagespagesyml">Pages（pages.yml）</a></h2>
+<pre><code>push book/** 或 手动触发
+  │
+  ├── [1] build    下载 mdBook → mdbook build
+  │                upload artifact（HTML 不进仓库）
+  └── [2] deploy   deploy-pages（GitHub 原生）
+</code></pre>
+<p><strong>特点</strong>：HTML 产物不在仓库中存储，由 Actions 临时构建并部署。不再需要 <code>gh-pages</code> 分支。</p>
+<h3 id="首次启用"><a class="header" href="#首次启用">首次启用</a></h3>
+<p>GitHub 仓库 → Settings → Pages → Source 选 <strong>GitHub Actions</strong>。</p>
+<hr />
+<h2 id="publishpublishyml"><a class="header" href="#publishpublishyml">Publish（publish.yml）</a></h2>
+<pre><code>git tag v0.2.0 &amp;&amp; git push origin v0.2.0
+  │
+  ├── [1] publish-core    先发 ducia-core（插件依赖它）
+  └── [2] publish-plugins 并发发布 4 个插件（等 core 成功后）
+</code></pre>
+<h3 id="前置准备"><a class="header" href="#前置准备">前置准备</a></h3>
+<ol>
+<li>在 https://crates.io/settings/tokens 生成 API token</li>
+<li>GitHub 仓库 → Settings → Secrets → Actions → 新建 <code>CRATES_IO_TOKEN</code>，粘贴 token</li>
+</ol>
+<h3 id="发布流程"><a class="header" href="#发布流程">发布流程</a></h3>
+<pre><code class="language-bash"># 1. 修改 backend/Cargo.toml 中的 workspace.package.version
+#    所有 crate 通过 version.workspace = true 继承此版本号
+
+# 2. 提交并推送
+git add -A
+git commit -m "release: v0.3.0"
+
+# 3. 打 tag 推送（触发自动发布）
+git tag v0.3.0
+git push origin main
+git push origin v0.3.0
+</code></pre>
+<h3 id="版本号管理"><a class="header" href="#版本号管理">版本号管理</a></h3>
+<p>项目使用 Cargo workspace 统一管理版本号。<strong>修改版本只需改一处</strong>：</p>
+<pre><code class="language-toml"># backend/Cargo.toml（唯一需要改的地方）
+[workspace.package]
+version = "0.3.0"       # ← 这里
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/FleetingLore/ducia-listing-framework"
+</code></pre>
+<p>所有子 crate 通过 <code>version.workspace = true</code> 自动继承。<code>changelog.md</code> 和文档中的版本号需手动同步。</p>
+<h3 id="手动触发"><a class="header" href="#手动触发">手动触发</a></h3>
+<p>除 tag 推送外，也可在 Actions 页面 → Publish → <strong>Run workflow</strong> 手动触发。</p>
+<hr />
+<h2 id="加密变量"><a class="header" href="#加密变量">加密变量</a></h2>
+<p>需要在 GitHub 仓库 Settings → Secrets and variables → Actions 中配置：</p>
+<div class="table-wrapper"><table><thead><tr><th>Secret</th><th>用途</th><th>哪个工作流用</th></tr></thead><tbody>
+<tr><td><code>CRATES_IO_TOKEN</code></td><td>crates.io API token</td><td><code>publish.yml</code></td></tr>
+</tbody></table>
+</div>
+<p>CI 和 Pages 工作流无需额外 secret。</p>
+<hr />
+<h2 id="本地运行工作流"><a class="header" href="#本地运行工作流">本地运行工作流</a></h2>
+<p>使用 <a href="https://github.com/nektos/act">act</a> 可在本地模拟运行：</p>
+<pre><code class="language-bash"># 安装
+brew install act
+
+# 模拟 push 事件
+act push
+
+# 模拟特定 job
+act -j backend
+</code></pre>
+<blockquote>
+<p><code>act</code> 需要 Docker，且部分 step（如 <code>actions/deploy-pages</code>）仅 GitHub 环境支持。</p>
+</blockquote>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="development.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="wasm.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="development.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="wasm.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

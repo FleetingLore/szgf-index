@@ -1,0 +1,382 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>系统架构 - Ducia 开发手册</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Ducia Listing Framework — 轻量级文档管理系统">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">简介</a></li><li class="chapter-item expanded affix "><a href="getting-started.html">快速开始</a></li><li class="chapter-item expanded affix "><li class="part-title">架构</li><li class="chapter-item expanded "><a href="architecture.html" class="active"><strong aria-hidden="true">1.</strong> 系统架构</a></li><li class="chapter-item expanded "><a href="plugins.html"><strong aria-hidden="true">2.</strong> 插件系统</a></li><li class="chapter-item expanded "><a href="permissions.html"><strong aria-hidden="true">3.</strong> 权限模型</a></li><li class="chapter-item expanded "><a href="i18n.html"><strong aria-hidden="true">4.</strong> 国际化</a></li><li class="chapter-item expanded affix "><li class="part-title">后端</li><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">5.</strong> 配置参考</a></li><li class="chapter-item expanded "><a href="api-reference.html"><strong aria-hidden="true">6.</strong> API 参考</a></li><li class="chapter-item expanded "><a href="storage.html"><strong aria-hidden="true">7.</strong> 存储后端</a></li><li class="chapter-item expanded "><a href="authentication.html"><strong aria-hidden="true">8.</strong> 认证后端</a></li><li class="chapter-item expanded affix "><li class="part-title">前端</li><li class="chapter-item expanded "><a href="frontend.html"><strong aria-hidden="true">9.</strong> 前端架构</a></li><li class="chapter-item expanded "><a href="typescript.html"><strong aria-hidden="true">10.</strong> TypeScript 类型</a></li><li class="chapter-item expanded affix "><li class="part-title">开发</li><li class="chapter-item expanded "><a href="development.html"><strong aria-hidden="true">11.</strong> 开发环境</a></li><li class="chapter-item expanded "><a href="ci-cd.html"><strong aria-hidden="true">12.</strong> CI / CD 工作流</a></li><li class="chapter-item expanded "><a href="wasm.html"><strong aria-hidden="true">13.</strong> WASM 构建</a></li><li class="chapter-item expanded affix "><li class="part-title">部署</li><li class="chapter-item expanded "><a href="deployment.html"><strong aria-hidden="true">14.</strong> 服务器部署</a></li><li class="chapter-item expanded affix "><a href="changelog.html">变更日志</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Ducia 开发手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/FleetingLore/ducia-listing-framework" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/FleetingLore/ducia-listing-framework/edit/main/book/src/src/architecture.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="系统架构"><a class="header" href="#系统架构">系统架构</a></h1>
+<p>Ducia 采用<strong>前后端分离 + 插件化</strong>架构，后端负责 API、认证和存储，前端负责 UI 渲染和交互。</p>
+<h2 id="整体分层"><a class="header" href="#整体分层">整体分层</a></h2>
+<pre><code class="language-text">浏览器 (React 18 + TS + Vite)
+    │  /api/*
+    ▼
+Vite Dev Proxy (:5173) → Actix-web (:3001)
+    │
+    ▼
+PluginRegistry
+    ├── Auth Plugin (认证)
+    ├── Storage Plugin (存储)
+    └── Extras (扩展预留)
+</code></pre>
+<p>请求路径：</p>
+<ul>
+<li>浏览器发起 API 请求</li>
+<li>Vite 开发代理转发到 <code>127.0.0.1:3001</code></li>
+<li>Actix-web 路由到对应 handler</li>
+<li>handler 从 <code>AppState</code> 获取 <code>PluginRegistry</code></li>
+<li>调用具体的 Auth / Storage 插件</li>
+</ul>
+<h2 id="后端6-个-rust-crate"><a class="header" href="#后端6-个-rust-crate">后端：6 个 Rust Crate</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Crate</th><th>路径</th><th>职责</th></tr></thead><tbody>
+<tr><td><code>ducia-core</code></td><td><code>backend/ducia-core/</code></td><td>核心 trait 定义（<code>AuthPlugin</code>、<code>DocRepository</code>），不包含任何具体实现</td></tr>
+<tr><td><code>ducia-server</code></td><td><code>backend/server/</code></td><td>二进制入口，组装插件、加载配置、启动 HTTP 服务</td></tr>
+<tr><td><code>ducia-auth-simple</code></td><td><code>backend/plugins/auth-simple/</code></td><td>序列码认证插件</td></tr>
+<tr><td><code>ducia-auth-db</code></td><td><code>backend/plugins/auth-db/</code></td><td>JWT + bcrypt + SQLite 认证插件</td></tr>
+<tr><td><code>ducia-storage-fs</code></td><td><code>backend/plugins/storage-fs/</code></td><td>文件系统存储插件（JSON 索引 + .md 文件）</td></tr>
+<tr><td><code>ducia-storage-sqlite</code></td><td><code>backend/plugins/storage-sqlite/</code></td><td>SQLite 存储插件</td></tr>
+</tbody></table>
+</div>
+<p>依赖关系：</p>
+<ul>
+<li><code>ducia-core</code> 是<strong>零依赖</strong>（除 <code>serde</code> 等基础库），只定义 trait</li>
+<li>4 个插件 crate 仅依赖 <code>ducia-core</code>，各自独立实现功能</li>
+<li><code>ducia-server</code> 依赖所有 5 个 crate，在启动时按配置组装</li>
+</ul>
+<h2 id="ducia-core-内部模块"><a class="header" href="#ducia-core-内部模块">ducia-core 内部模块</a></h2>
+<pre><code class="language-text">ducia-core/src/
+├── lib.rs          # 公共 API 重新导出
+├── doc/            # 文档模型
+│   ├── model.rs    #   DocMeta, DocFull, CreateDocRequest, DocFormat
+│   └── repo.rs     #   DocRepository trait
+├── plugin/         # 插件系统
+│   ├── auth.rs     #   AuthPlugin trait
+│   ├── registry.rs #   PluginRegistry (builder pattern)
+│   └── storage.rs  #   StoragePlugin = Box&lt;dyn DocRepository&gt;
+├── perm/           # 权限引擎
+│   └── model.rs    #   Identity, RoleDef, RoleConfig
+└── i18n/           # 国际化
+    └── mod.rs      #   I18nManager
+</code></pre>
+<p>lib.rs 负责重新导出所有公开类型，是 crate 的唯一入口。</p>
+<h2 id="插件注册表pluginregistry"><a class="header" href="#插件注册表pluginregistry">插件注册表（PluginRegistry）</a></h2>
+<p><code>PluginRegistry</code> 采用 <strong>builder 模式</strong>在启动时组装：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use ducia_core::plugin::registry::PluginRegistry;
+
+let registry = PluginRegistry::new()
+    .with_auth(auth_plugin)       // Arc&lt;dyn AuthPlugin&gt;
+    .with_storage(storage_plugin); // Box&lt;dyn DocRepository&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>它持有：</p>
+<ul>
+<li><code>auth: Option&lt;Arc&lt;dyn AuthPlugin&gt;&gt;</code> — 认证插件（框架约定只有一个活跃的认证插件）</li>
+<li><code>storage: Option&lt;StoragePlugin&gt;</code> — 存储插件</li>
+<li><code>extras: HashMap&lt;String, Box&lt;dyn Any + Send + Sync&gt;&gt;</code> — 未来扩展预留</li>
+</ul>
+<p>整个生命周期内不变，线程安全（所有字段均为 <code>Send + Sync</code>）。</p>
+<h2 id="appstate"><a class="header" href="#appstate">AppState</a></h2>
+<p><code>AppState</code> 是注入到 actix-web handler 中的全局状态：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct AppState {
+    pub plugins: PluginRegistry,       // 插件注册表
+    pub role_config: Arc&lt;RoleConfig&gt;,  // 动态角色配置
+    pub i18n: I18nManager,             // 国际化管理器
+}
+<span class="boring">}</span></code></pre></pre>
+<p>通过 actix-web 的 <code>web::Data&lt;AppState&gt;</code> 提取器注入：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub async fn list_cats(state: web::Data&lt;AppState&gt;) -&gt; impl Responder {
+    let storage = state.plugins.storage().unwrap();
+    let docs = storage.list_docs(false).await.unwrap();
+    // ...
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="前端react-18--typescript"><a class="header" href="#前端react-18--typescript">前端：React 18 + TypeScript</a></h2>
+<h3 id="视图注册表viewregistry"><a class="header" href="#视图注册表viewregistry">视图注册表（ViewRegistry）</a></h3>
+<p>前端不再硬编码 3 个视图，而是采用 <strong>ViewRegistry</strong> 模式，视图按 URL 模式动态注册和匹配：</p>
+<ul>
+<li><strong><code>src/views/registry.ts</code></strong> — <code>ViewRegistry</code> 类，提供 <code>register()</code> 注册视图、<code>resolve()</code> 按当前路径匹配视图</li>
+<li><strong><code>src/views/defaults.ts</code></strong> — 默认注册 3 个视图（listing、doc、admin）</li>
+</ul>
+<p>当前已注册的默认视图及路径映射：</p>
+<div class="table-wrapper"><table><thead><tr><th>路径</th><th>视图组件</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>/</code> 或 <code>/listing</code></td><td><code>Listing</code></td><td>文档列表首页</td></tr>
+<tr><td><code>/listing/lib/{id}</code></td><td><code>DocPage</code></td><td>文档详情/阅读页</td></tr>
+<tr><td><code>/listing/lib/0</code></td><td><code>AdminPage</code></td><td>管理面板（序列码认证入口）</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p>以上 3 个视图仅为默认注册项。通过 <code>viewRegistry.register({name, match, component})</code> 即可添加新视图，路径映射完全可扩展。</p>
+</blockquote>
+<h3 id="核心-hooks"><a class="header" href="#核心-hooks">核心 Hooks</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Hook</th><th>文件</th><th>功能</th></tr></thead><tbody>
+<tr><td><code>useI18n</code></td><td><code>src/hooks/useI18n.tsx</code></td><td>国际化翻译（I18nProvider + useContext）</td></tr>
+<tr><td><code>useCats</code></td><td><code>src/hooks/useCats.ts</code></td><td>文档列表加载</td></tr>
+<tr><td><code>useDoc</code></td><td><code>src/hooks/useDoc.ts</code></td><td>单文档获取</td></tr>
+<tr><td><code>useAdmin</code></td><td><code>src/hooks/useAdmin.ts</code></td><td>序列码认证 + session 管理</td></tr>
+<tr><td><code>useUpload</code></td><td><code>src/hooks/useUpload.ts</code></td><td>文档上传</td></tr>
+</tbody></table>
+</div>
+<h3 id="前端入口"><a class="header" href="#前端入口">前端入口</a></h3>
+<pre><code class="language-typescript">// src/main.tsx
+ReactDOM.createRoot(document.getElementById("root")!).render(
+    &lt;I18nProvider&gt;
+        &lt;App /&gt;
+    &lt;/I18nProvider&gt;
+);
+</code></pre>
+<p><code>I18nProvider</code> 包裹整个应用，初始化时从 <code>/api/locales</code> 加载可用语言列表，根据浏览器 <code>Accept-Language</code> 解析初始语言。</p>
+<h2 id="开发代理"><a class="header" href="#开发代理">开发代理</a></h2>
+<p>Vite 开发服务器（<code>:5173</code>）将所有 <code>/api/*</code> 请求代理到后端：</p>
+<pre><code class="language-js">// vite.config.js
+export default defineConfig({
+  server: {
+    proxy: {
+      '/api': 'http://127.0.0.1:3001'
+    }
+  }
+})
+</code></pre>
+<p>生产环境下，前后端文件一同打包到 <code>dist/</code> 目录，由 actix-web 通过 catch-all 路由 <code>/{tail:.*}</code> 托管：先尝试匹配精确静态文件，失败则返回 <code>index.html</code> 实现 SPA fallback。</p>
+<h2 id="服务启动流程"><a class="header" href="#服务启动流程">服务启动流程</a></h2>
+<p><code>ducia-server/src/main.rs</code> 按以下顺序启动：</p>
+<ol>
+<li>查找项目根目录（向上查找包含 <code>config/</code> 的目录）</li>
+<li>从 <code>config/roles.json</code> 加载角色配置</li>
+<li>从 <code>config/i18n/</code> 加载所有语言包，初始化 <code>I18nManager</code></li>
+<li>根据 <code>config/settings.json</code> 的 <code>use_database</code> 字段选择存储后端</li>
+<li>根据 <code>config/auth.json</code> 是否存在选择认证后端（有则 <code>auth-db</code>，无则 <code>auth-simple</code>）</li>
+<li>通过 <code>PluginRegistry::new().with_auth(...).with_storage(...)</code> 组装插件</li>
+<li>创建 <code>AppState</code>，注入到 actix-web，绑定 <code>0.0.0.0:3001</code></li>
+<li>注册所有 API 路由，启动 HTTP 服务</li>
+</ol>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="getting-started.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="plugins.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="getting-started.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="plugins.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

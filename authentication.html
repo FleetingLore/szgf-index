@@ -1,0 +1,558 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>认证后端 - Ducia 开发手册</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Ducia Listing Framework — 轻量级文档管理系统">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">简介</a></li><li class="chapter-item expanded affix "><a href="getting-started.html">快速开始</a></li><li class="chapter-item expanded affix "><li class="part-title">架构</li><li class="chapter-item expanded "><a href="architecture.html"><strong aria-hidden="true">1.</strong> 系统架构</a></li><li class="chapter-item expanded "><a href="plugins.html"><strong aria-hidden="true">2.</strong> 插件系统</a></li><li class="chapter-item expanded "><a href="permissions.html"><strong aria-hidden="true">3.</strong> 权限模型</a></li><li class="chapter-item expanded "><a href="i18n.html"><strong aria-hidden="true">4.</strong> 国际化</a></li><li class="chapter-item expanded affix "><li class="part-title">后端</li><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">5.</strong> 配置参考</a></li><li class="chapter-item expanded "><a href="api-reference.html"><strong aria-hidden="true">6.</strong> API 参考</a></li><li class="chapter-item expanded "><a href="storage.html"><strong aria-hidden="true">7.</strong> 存储后端</a></li><li class="chapter-item expanded "><a href="authentication.html" class="active"><strong aria-hidden="true">8.</strong> 认证后端</a></li><li class="chapter-item expanded affix "><li class="part-title">前端</li><li class="chapter-item expanded "><a href="frontend.html"><strong aria-hidden="true">9.</strong> 前端架构</a></li><li class="chapter-item expanded "><a href="typescript.html"><strong aria-hidden="true">10.</strong> TypeScript 类型</a></li><li class="chapter-item expanded affix "><li class="part-title">开发</li><li class="chapter-item expanded "><a href="development.html"><strong aria-hidden="true">11.</strong> 开发环境</a></li><li class="chapter-item expanded "><a href="ci-cd.html"><strong aria-hidden="true">12.</strong> CI / CD 工作流</a></li><li class="chapter-item expanded "><a href="wasm.html"><strong aria-hidden="true">13.</strong> WASM 构建</a></li><li class="chapter-item expanded affix "><li class="part-title">部署</li><li class="chapter-item expanded "><a href="deployment.html"><strong aria-hidden="true">14.</strong> 服务器部署</a></li><li class="chapter-item expanded affix "><a href="changelog.html">变更日志</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Ducia 开发手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/FleetingLore/ducia-listing-framework" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/FleetingLore/ducia-listing-framework/edit/main/book/src/src/authentication.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="认证后端"><a class="header" href="#认证后端">认证后端</a></h1>
+<p>Ducia 的认证层通过 <code>AuthPlugin</code> trait 抽象，支持即插即用的认证方案。框架默认提供两种实现，也可对接外部认证系统。</p>
+<h2 id="架构概览"><a class="header" href="#架构概览">架构概览</a></h2>
+<pre><code class="language-text">HTTP Request
+    │
+    ├── config/auth.json 存在? ──→ auth-db ──→ JWT + bcrypt ──→ data/auth.db
+    │
+    └── config/auth.json 不存在 ──→ auth-simple ──→ UUID token ──→ 内存 HashMap
+    
+    两者都实现 AuthPlugin trait → 注入 PluginRegistry → Handler 调用
+</code></pre>
+<p>认证插件通过 <code>PluginRegistry</code> 注入，handler 在需要认证的接口中通过内置 session endpoint 或自定义逻辑调用 <code>AuthPlugin</code> 方法。</p>
+<hr />
+<h2 id="authplugin-trait"><a class="header" href="#authplugin-trait"><code>AuthPlugin</code> trait</a></h2>
+<p>定义在 <code>ducia-core/plugin/auth.rs</code>，所有认证后端必须实现此接口：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[async_trait]
+pub trait AuthPlugin: Send + Sync {
+    /// 插件唯一名称
+    fn name(&amp;self) -&gt; &amp;str;
+
+    /// 从请求头中提取身份
+    /// 返回 None 表示未认证（匿名用户）
+    async fn authenticate(&amp;self, headers: &amp;HashMap&lt;String, String&gt;) -&gt; Option&lt;Identity&gt;;
+
+    /// 创建会话，返回 token/凭证字符串
+    async fn create_session(&amp;self, identity: &amp;Identity) -&gt; Result&lt;String&gt;;
+
+    /// 销毁会话
+    async fn destroy_session(&amp;self, token: &amp;str) -&gt; Result&lt;()&gt;;
+
+    /// 检查会话是否有效，返回对应身份
+    async fn check_session(&amp;self, token: &amp;str) -&gt; Option&lt;Identity&gt;;
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="核心数据类型"><a class="header" href="#核心数据类型">核心数据类型</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>类型</th><th>说明</th><th>关键字段</th></tr></thead><tbody>
+<tr><td><code>Identity</code></td><td>用户身份</td><td><code>id</code>, <code>username</code>(metadata), <code>roles</code>, <code>permissions</code></td></tr>
+<tr><td><code>RoleConfig</code></td><td>角色配置</td><td>从 <code>config/roles.json</code> 加载的角色定义映射</td></tr>
+</tbody></table>
+</div>
+<h3 id="身份解析流程"><a class="header" href="#身份解析流程">身份解析流程</a></h3>
+<pre><code>HTTP Request
+  → 提取请求头 (HashMap&lt;String, String&gt;)
+  → AuthPlugin::authenticate(headers)
+  → 返回 Some(Identity) 或 None (匿名)
+</code></pre>
+<p>框架本身不执行访问控制检查——handler 层根据 <code>Identity</code> 中的权限自行判断。权限的解析（继承链展开）由 <code>RoleConfig::build_identity()</code> 完成。</p>
+<hr />
+<h2 id="auth-simple--序列码认证"><a class="header" href="#auth-simple--序列码认证">auth-simple — 序列码认证</a></h2>
+<p><strong>默认认证方案</strong>（当 <code>config/auth.json</code> 不存在时自动启用）。</p>
+<h3 id="工作原理"><a class="header" href="#工作原理">工作原理</a></h3>
+<pre><code>1. 前端 GET /api/admin/sequence  →  获取 [1,2,3,2,3,4]
+2. 用户在管理面板按序点击数字按钮
+3. 前端验证序列正确 → POST /api/admin/session
+4. 服务端生成 UUID token → 存入内存 HashMap
+5. 后续请求携带 X-Session-Token 头
+</code></pre>
+<h3 id="数制设计"><a class="header" href="#数制设计">数制设计</a></h3>
+<p>管理面板是一个 2×2 的按钮网格，数字排列为 <code>[2, 1, 3, 4]</code>：</p>
+<pre><code>┌───┬───┐
+│ 2 │ 1 │
+├───┼───┤
+│ 3 │ 4 │
+└───┴───┘
+</code></pre>
+<p>这四个数字 <strong>1-4</strong> 是五进制（base-5）的非零位。五进制使用 0,1,2,3,4 五个数字，此处 0 不在网格中意味着"无输入"。</p>
+<p><code>sequence.json</code> 中的序列 <code>[1,2,3,2,3,4]</code> 实质上是一个五进制数字串。示例密码 <code>"1234"</code> 同样是一个五进制数——它是 1×5³+2×5²+3×5+4 = 194₁₀。两条认证路径共享同一套数制基础，只是输入方式不同：前端的按钮点击和后端的密码文本，最终都归约到同一个五进制数字空间。</p>
+<h3 id="数据结构"><a class="header" href="#数据结构">数据结构</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct SimpleAuth {
+    config_dir: PathBuf,
+    sessions: Mutex&lt;HashMap&lt;String, Identity&gt;&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<ul>
+<li><strong>序列定义</strong>：从 <code>config/sequence.json</code> 加载，内容明文可见</li>
+<li><strong>会话存储</strong>：<code>tokio::sync::Mutex&lt;HashMap&lt;String, Identity&gt;&gt;</code> 内存存储</li>
+<li><strong>Token 格式</strong>：UUID v4（如 <code>a1b2c3d4-e5f6-7890-abcd-ef1234567890</code>）</li>
+<li><strong>Token 生命周期</strong>：服务重启即失效</li>
+</ul>
+<h3 id="认证头格式"><a class="header" href="#认证头格式">认证头格式</a></h3>
+<pre><code>X-Session-Token: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+</code></pre>
+<p>请求头名称采用小写匹配（<code>x-session-token</code>），HTTP 协议本身不区分大小写。</p>
+<h3 id="优点"><a class="header" href="#优点">优点</a></h3>
+<ul>
+<li><strong>零依赖</strong>：无需数据库、无需密码</li>
+<li><strong>极简部署</strong>：只需一个 JSON 配置文件</li>
+<li><strong>即时可用</strong>：无注册流程</li>
+</ul>
+<h3 id="缺点"><a class="header" href="#缺点">缺点</a></h3>
+<ul>
+<li><strong>无密码保护</strong>：序列码明文存储在配置文件中</li>
+<li><strong>仅单一管理员</strong>：所有通过序列认证的用户都是 <code>admin</code> 角色</li>
+<li><strong>服务重启丢失</strong>：所有会话在重启后失效</li>
+<li><strong>不适合多用户</strong>：无法区分不同用户身份</li>
+</ul>
+<h3 id="适用场景"><a class="header" href="#适用场景">适用场景</a></h3>
+<ul>
+<li>个人或小团队内部使用</li>
+<li>受信任的内网环境</li>
+<li>开发测试阶段</li>
+<li>不需要多用户系统的场景</li>
+</ul>
+<hr />
+<h2 id="auth-db--jwt--数据库认证"><a class="header" href="#auth-db--jwt--数据库认证">auth-db — JWT + 数据库认证</a></h2>
+<p><strong>生产环境推荐方案</strong>（创建 <code>config/auth.json</code> 即可启用）。</p>
+<h3 id="工作原理-1"><a class="header" href="#工作原理-1">工作原理</a></h3>
+<pre><code class="language-text">注册流程：
+  客户端 → POST /api/auth/register {username, password}
+  服务端 → 校验 → bcrypt 哈希 → INSERT INTO users → 返回 {id, username, roles:["viewer"]}
+
+登录流程：
+  客户端 → POST /api/auth/login {username, password}
+  服务端 → SELECT user → bcrypt::verify → 签发 JWT → 返回 {token, user}
+
+认证请求：
+  客户端 → Authorization: Bearer &lt;token&gt;
+  服务端 → JWT 解码 → 过期校验 → 业务数据
+</code></pre>
+<h3 id="数据结构-1"><a class="header" href="#数据结构-1">数据结构</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct AuthDb {
+    conn: Mutex&lt;Connection&gt;,   // SQLite 数据库连接
+    jwt_secret: String,        // JWT 签名密钥
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="数据库-schemadataauthdb"><a class="header" href="#数据库-schemadataauthdb">数据库 Schema（<code>data/auth.db</code>）</a></h3>
+<p><strong><code>users</code> 表</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>列名</th><th>类型</th><th>约束</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>id</code></td><td><code>TEXT</code></td><td><code>PRIMARY KEY</code></td><td>用户 UUID v4</td></tr>
+<tr><td><code>username</code></td><td><code>TEXT</code></td><td><code>NOT NULL UNIQUE</code></td><td>用户名</td></tr>
+<tr><td><code>password</code></td><td><code>TEXT</code></td><td><code>NOT NULL</code></td><td>bcrypt 哈希后的密码</td></tr>
+<tr><td><code>roles</code></td><td><code>TEXT</code></td><td><code>DEFAULT 'viewer'</code></td><td>逗号分隔的角色列表</td></tr>
+<tr><td><code>created_at</code></td><td><code>INTEGER</code></td><td><code>NOT NULL</code></td><td>注册时间戳（秒）</td></tr>
+</tbody></table>
+</div>
+<h3 id="jwt-token-结构"><a class="header" href="#jwt-token-结构">JWT Token 结构</a></h3>
+<p>JWT payload（Claims）：</p>
+<pre><code class="language-json">{
+  "sub": "用户 UUID",
+  "username": "alice",
+  "roles": ["viewer"],
+  "exp": 1700000000,
+  "iat": 1699395200
+}
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>sub</code></td><td>用户唯一标识（subject）</td></tr>
+<tr><td><code>username</code></td><td>用户名</td></tr>
+<tr><td><code>roles</code></td><td>角色列表</td></tr>
+<tr><td><code>exp</code></td><td>过期时间（7 天后）</td></tr>
+<tr><td><code>iat</code></td><td>签发时间</td></tr>
+</tbody></table>
+</div>
+<h3 id="密码安全"><a class="header" href="#密码安全">密码安全</a></h3>
+<ul>
+<li><strong>bcrypt 哈希</strong>：使用 <code>bcrypt::DEFAULT_COST</code>（cost=12）进行哈希</li>
+<li><strong>密码强度</strong>：至少 4 个字符</li>
+<li><strong>验证方式</strong>：<code>bcrypt::verify()</code> 常量时间比较，防时序攻击</li>
+</ul>
+<blockquote>
+<p><strong>关于示例中的 <code>"1234"</code></strong>：这不是随意选的值。数字 1-4 是管理面板按钮网格的五进制位（参见 <a href="#%E6%95%B0%E5%88%B6%E8%AE%BE%E8%AE%A1">auth-simple 数制设计</a>），密码 <code>"1234"</code> 与管理序列 <code>[1,2,3,2,3,4]</code> 处于同一数字空间——前者是文本密码，后者是按钮序列，但底层都是五进制数字串。<code>"1234"</code> 作为示例值既满足 4 位最低长度要求，又保持了与项目数字体系的一致性。生产环境当然要用强密码——bcrypt 负责安全存储，不依赖数字本身的强度。此外 <code>config/auth.json</code> 的 <code>jwt_secret</code> 也需从默认值更换。</p>
+</blockquote>
+<h3 id="jwt-安全"><a class="header" href="#jwt-安全">JWT 安全</a></h3>
+<ul>
+<li><strong>签名算法</strong>：HS256（HMAC-SHA256）</li>
+<li><strong>密钥来源</strong>：<code>config/auth.json</code> → <code>jwt_secret</code> 字段，若未提供则自动生成随机 UUID</li>
+<li><strong>有效期</strong>：
+<ul>
+<li>用户登录：7 天（<code>now + 86400 * 7</code>）</li>
+<li>管理员会话：24 小时（<code>now + 86400</code>）</li>
+</ul>
+</li>
+<li><strong>Token 销毁</strong>：目前为无状态 JWT（不维护黑名单），通过配置短有效期降低风险</li>
+</ul>
+<h3 id="认证头格式-1"><a class="header" href="#认证头格式-1">认证头格式</a></h3>
+<pre><code>Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+</code></pre>
+<p>同时也兼容 <code>X-Session-Token</code> 头（向后兼容 <code>auth-simple</code> 的客户端）。</p>
+<h3 id="适用场景-1"><a class="header" href="#适用场景-1">适用场景</a></h3>
+<ul>
+<li>多用户系统</li>
+<li>生产环境</li>
+<li>需要用户注册/登录的公开服务</li>
+<li>需要角色区分的场景</li>
+</ul>
+<hr />
+<h2 id="认证方案对比"><a class="header" href="#认证方案对比">认证方案对比</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>特性</th><th>auth-simple</th><th>auth-db</th></tr></thead><tbody>
+<tr><td>认证方式</td><td>序列码</td><td>用户名 + 密码</td></tr>
+<tr><td>Token 类型</td><td>UUID v4</td><td>JWT (HS256)</td></tr>
+<tr><td>Token 有效期</td><td>直到服务重启</td><td>7 天（登录）/ 24 小时（管理员）</td></tr>
+<tr><td>存储</td><td>内存 HashMap</td><td>SQLite 数据库</td></tr>
+<tr><td>多用户</td><td>❌ (单一 admin)</td><td>✅</td></tr>
+<tr><td>角色支持</td><td>❌ (固定 admin)</td><td>✅ (从 roles.json 加载)</td></tr>
+<tr><td>密码安全</td><td>N/A</td><td>bcrypt 哈希</td></tr>
+<tr><td>重启影响</td><td>所有会话丢失</td><td>Token 仍有效</td></tr>
+<tr><td>配置</td><td>仅需 sequence.json</td><td>需 auth.json</td></tr>
+<tr><td>依赖</td><td>无</td><td>rusqlite, bcrypt, jsonwebtoken</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="切换认证后端"><a class="header" href="#切换认证后端">切换认证后端</a></h2>
+<h3 id="启用-auth-db"><a class="header" href="#启用-auth-db">启用 auth-db</a></h3>
+<p>创建 <code>config/auth.json</code> 文件：</p>
+<pre><code class="language-json">{
+  "jwt_secret": "生成一个高强度的随机字符串"
+}
+</code></pre>
+<p>重启服务，框架自动检测到该文件并切换到 <code>auth-db</code>。</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// main.rs 中的切换逻辑
+let auth_plugin = if config_dir.join("auth.json").exists() {
+    println!("Using auth-db (database authentication)");
+    Arc::new(AuthDb::new(data_dir.join("auth.db"), auth_config)?)
+} else {
+    println!("Using auth-simple (sequence code authentication)");
+    Arc::new(SimpleAuth::new(config_dir.clone()))
+};
+<span class="boring">}</span></code></pre></pre>
+<h3 id="回退到-auth-simple"><a class="header" href="#回退到-auth-simple">回退到 auth-simple</a></h3>
+<p>删除 <code>config/auth.json</code> 文件并重启服务。注意：</p>
+<ul>
+<li><code>auth.db</code> 中的用户数据不会被删除，但不再可用</li>
+<li>所有 <code>auth-db</code> 的 JWT token 将失效</li>
+<li>恢复为序列码登录方式</li>
+</ul>
+<h3 id="生成安全密钥"><a class="header" href="#生成安全密钥">生成安全密钥</a></h3>
+<pre><code class="language-bash"># Linux / macOS
+openssl rand -hex 32
+
+# 或使用 uuidgen
+uuidgen
+</code></pre>
+<hr />
+<h2 id="外部认证扩展概念"><a class="header" href="#外部认证扩展概念">外部认证扩展（概念）</a></h2>
+<p>框架的 <code>AuthPlugin</code> trait 设计为可对接任意外部认证系统。以下是 <code>auth-external</code> 插件的概念设计：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct ExternalAuth {
+    verify_url: String,      // 外部验证端点
+    http_client: Client,     // HTTP 客户端
+}
+
+#[async_trait]
+impl AuthPlugin for ExternalAuth {
+    async fn authenticate(&amp;self, headers: &amp;HashMap&lt;String, String&gt;) -&gt; Option&lt;Identity&gt; {
+        let token = extract_token(headers)?;
+
+        // 调用外部服务验证 token
+        let resp = self.http_client
+            .get(&amp;self.verify_url)
+            .bearer_auth(token)
+            .send().await.ok()?;
+
+        // 解析外部服务返回的用户信息
+        resp.json::&lt;Identity&gt;().await.ok()
+    }
+
+    async fn check_session(&amp;self, token: &amp;str) -&gt; Option&lt;Identity&gt; {
+        // 同样调用外部验证接口
+        self.verify_external(token).await
+    }
+    // ...
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="可对接的外部系统"><a class="header" href="#可对接的外部系统">可对接的外部系统</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>系统</th><th>说明</th></tr></thead><tbody>
+<tr><td><strong>OAuth 2.0 / OIDC</strong></td><td>Google、GitHub、微软等第三方登录</td></tr>
+<tr><td><strong>LDAP / Active Directory</strong></td><td>企业目录服务</td></tr>
+<tr><td><strong>自建认证服务</strong></td><td>统一的内部用户中心</td></tr>
+<tr><td><strong>WebAuthn / Passkey</strong></td><td>无密码认证</td></tr>
+<tr><td><strong>SAML</strong></td><td>企业单点登录（SSO）</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="认证流程完整示例"><a class="header" href="#认证流程完整示例">认证流程完整示例</a></h2>
+<h3 id="场景一auth-simple序列码认证"><a class="header" href="#场景一auth-simple序列码认证">场景一：auth-simple（序列码认证）</a></h3>
+<pre><code class="language-bash"># 1. 获取登录序列
+curl http://127.0.0.1:3001/api/admin/sequence
+# → {"sequence": [1,2,3,2,3,4]}
+
+# 2. 创建管理员会话（前端按序点击按钮后调用）
+curl -X POST http://127.0.0.1:3001/api/admin/session
+# → {"token": "f47ac10b-..."}
+
+# 3. 后续请求携带 token
+curl http://127.0.0.1:3001/api/admin/session \
+  -H 'X-Session-Token: f47ac10b-...'
+# → {"isAdmin": true}
+
+# 4. 上传文档
+curl -X POST http://127.0.0.1:3001/api/cats \
+  -H 'Content-Type: application/json' \
+  -H 'X-Session-Token: f47ac10b-...' \
+  -d '{"title":"文档","content":"# 内容"}'
+</code></pre>
+<h3 id="场景二auth-dbjwt-认证"><a class="header" href="#场景二auth-dbjwt-认证">场景二：auth-db（JWT 认证）</a></h3>
+<pre><code class="language-bash"># 1. 注册用户
+curl -X POST http://127.0.0.1:3001/api/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"alice","password":"secure1234"}'
+# → {"success":true,"data":{"id":"...","username":"alice","roles":["viewer"]}}
+
+# 2. 登录获取 JWT
+curl -X POST http://127.0.0.1:3001/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"alice","password":"secure1234"}'
+# → {"success":true,"data":{"token":"eyJ...","user":{...}}}
+
+# 3. 验证 token
+curl http://127.0.0.1:3001/api/auth/me \
+  -H 'Authorization: Bearer eyJ...'
+# → {"success":true,"data":{"id":"...","username":"alice","roles":["viewer"]}}
+
+# 4. 使用 token 访问资源
+curl http://127.0.0.1:3001/api/cats \
+  -H 'Authorization: Bearer eyJ...'
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="storage.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="frontend.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="storage.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="frontend.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,675 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>API 参考 - Ducia 开发手册</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Ducia Listing Framework — 轻量级文档管理系统">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">简介</a></li><li class="chapter-item expanded affix "><a href="getting-started.html">快速开始</a></li><li class="chapter-item expanded affix "><li class="part-title">架构</li><li class="chapter-item expanded "><a href="architecture.html"><strong aria-hidden="true">1.</strong> 系统架构</a></li><li class="chapter-item expanded "><a href="plugins.html"><strong aria-hidden="true">2.</strong> 插件系统</a></li><li class="chapter-item expanded "><a href="permissions.html"><strong aria-hidden="true">3.</strong> 权限模型</a></li><li class="chapter-item expanded "><a href="i18n.html"><strong aria-hidden="true">4.</strong> 国际化</a></li><li class="chapter-item expanded affix "><li class="part-title">后端</li><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">5.</strong> 配置参考</a></li><li class="chapter-item expanded "><a href="api-reference.html" class="active"><strong aria-hidden="true">6.</strong> API 参考</a></li><li class="chapter-item expanded "><a href="storage.html"><strong aria-hidden="true">7.</strong> 存储后端</a></li><li class="chapter-item expanded "><a href="authentication.html"><strong aria-hidden="true">8.</strong> 认证后端</a></li><li class="chapter-item expanded affix "><li class="part-title">前端</li><li class="chapter-item expanded "><a href="frontend.html"><strong aria-hidden="true">9.</strong> 前端架构</a></li><li class="chapter-item expanded "><a href="typescript.html"><strong aria-hidden="true">10.</strong> TypeScript 类型</a></li><li class="chapter-item expanded affix "><li class="part-title">开发</li><li class="chapter-item expanded "><a href="development.html"><strong aria-hidden="true">11.</strong> 开发环境</a></li><li class="chapter-item expanded "><a href="ci-cd.html"><strong aria-hidden="true">12.</strong> CI / CD 工作流</a></li><li class="chapter-item expanded "><a href="wasm.html"><strong aria-hidden="true">13.</strong> WASM 构建</a></li><li class="chapter-item expanded affix "><li class="part-title">部署</li><li class="chapter-item expanded "><a href="deployment.html"><strong aria-hidden="true">14.</strong> 服务器部署</a></li><li class="chapter-item expanded affix "><a href="changelog.html">变更日志</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Ducia 开发手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/FleetingLore/ducia-listing-framework" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/FleetingLore/ducia-listing-framework/edit/main/book/src/src/api-reference.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="api-参考"><a class="header" href="#api-参考">API 参考</a></h1>
+<p>全部 API 均以 JSON 格式交互，基础路径为 <code>http://127.0.0.1:3001</code>。</p>
+<h2 id="通用约定"><a class="header" href="#通用约定">通用约定</a></h2>
+<h3 id="响应格式"><a class="header" href="#响应格式">响应格式</a></h3>
+<p>所有接口返回统一 JSON 结构：</p>
+<pre><code class="language-json">{
+  "success": true,
+  "data": { ... },
+  "message": "错误描述（仅失败时）"
+}
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>success</code></td><td><code>bool</code></td><td>操作是否成功</td></tr>
+<tr><td><code>data</code></td><td><code>object</code> / <code>array</code> / <code>null</code></td><td>业务数据载荷</td></tr>
+<tr><td><code>message</code></td><td><code>string</code>（可选）</td><td>失败时的错误描述</td></tr>
+</tbody></table>
+</div>
+<h3 id="认证方式"><a class="header" href="#认证方式">认证方式</a></h3>
+<p>不同认证插件使用不同的请求头：</p>
+<div class="table-wrapper"><table><thead><tr><th>插件</th><th>请求头</th><th>格式</th></tr></thead><tbody>
+<tr><td><code>auth-simple</code></td><td><code>X-Session-Token</code></td><td><code>X-Session-Token: &lt;uuid&gt;</code></td></tr>
+<tr><td><code>auth-db</code></td><td><code>Authorization</code></td><td><code>Authorization: Bearer &lt;jwt&gt;</code></td></tr>
+</tbody></table>
+</div>
+<hr />
+<h2 id="文档-api"><a class="header" href="#文档-api">文档 API</a></h2>
+<h3 id="get-apicats--列出文档"><a class="header" href="#get-apicats--列出文档"><code>GET /api/cats</code> — 列出文档</a></h3>
+<p>获取所有可见文档（不含已删除和已弃用的文档）。</p>
+<p><strong>无需认证。</strong></p>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl http://127.0.0.1:3001/api/cats
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "title": "示例文档",
+      "created_at": 1782165910244
+    }
+  ],
+  "siteName": "25 电科 3 班待办事项清单"
+}
+</code></pre>
+<p><strong>响应字段</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>success</code></td><td><code>bool</code></td><td>是否成功</td></tr>
+<tr><td><code>data</code></td><td><code>array</code></td><td>文档列表</td></tr>
+<tr><td><code>data[].id</code></td><td><code>string</code></td><td>文档唯一 ID</td></tr>
+<tr><td><code>data[].title</code></td><td><code>string</code></td><td>文档标题</td></tr>
+<tr><td><code>data[].created_at</code></td><td><code>number</code></td><td>创建时间（毫秒时间戳）</td></tr>
+<tr><td><code>siteName</code></td><td><code>string</code></td><td>站点名称</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="get-apicatsid--获取单篇文档"><a class="header" href="#get-apicatsid--获取单篇文档"><code>GET /api/cats/{id}</code> — 获取单篇文档</a></h3>
+<p>获取指定文档的完整内容。</p>
+<p><strong>无需认证。</strong></p>
+<p><strong>路径参数</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>参数</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>id</code></td><td><code>string</code></td><td>文档 ID</td></tr>
+</tbody></table>
+</div>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl http://127.0.0.1:3001/api/cats/1
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{
+  "success": true,
+  "data": {
+    "id": "1",
+    "title": "示例文档",
+    "content": "# Hello Ducia\n\n这是示例内容。",
+    "created_at": 1782165910244,
+    "deprecated": false
+  }
+}
+</code></pre>
+<p><strong>响应字段</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>data.id</code></td><td><code>string</code></td><td>文档 ID</td></tr>
+<tr><td><code>data.title</code></td><td><code>string</code></td><td>文档标题</td></tr>
+<tr><td><code>data.content</code></td><td><code>string</code></td><td>Markdown 原始内容</td></tr>
+<tr><td><code>data.created_at</code></td><td><code>number</code></td><td>创建时间（毫秒时间戳）</td></tr>
+<tr><td><code>data.deprecated</code></td><td><code>bool</code></td><td>是否已弃用</td></tr>
+</tbody></table>
+</div>
+<p><strong>错误响应</strong></p>
+<pre><code class="language-json">{ "success": false, "message": "not found" }
+</code></pre>
+<hr />
+<h3 id="post-apicats--创建文档"><a class="header" href="#post-apicats--创建文档"><code>POST /api/cats</code> — 创建文档</a></h3>
+<p>上传一篇新文档。</p>
+<p><strong>需要认证</strong>（<code>doc:write</code> 权限）。</p>
+<p><strong>请求体</strong></p>
+<pre><code class="language-json">{
+  "title": "新文档标题",
+  "content": "# Markdown 内容"
+}
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>title</code></td><td><code>string</code></td><td>是</td><td>文档标题</td></tr>
+<tr><td><code>content</code></td><td><code>string</code></td><td>是</td><td>Markdown 格式的文档正文</td></tr>
+</tbody></table>
+</div>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl -X POST http://127.0.0.1:3001/api/cats \
+  -H 'Content-Type: application/json' \
+  -H 'X-Session-Token: &lt;admin-token&gt;' \
+  -d '{"title":"新文档","content":"# 新文档\n内容..."}'
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{
+  "success": true,
+  "data": {
+    "id": "2",
+    "title": "新文档",
+    "created_at": 1782166000000
+  }
+}
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>data.id</code></td><td><code>string</code></td><td>新创建的文档 ID</td></tr>
+<tr><td><code>data.title</code></td><td><code>string</code></td><td>文档标题</td></tr>
+<tr><td><code>data.created_at</code></td><td><code>number</code></td><td>创建时间（毫秒时间戳）</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="put-apicatsiddeprecated--切换弃用状态"><a class="header" href="#put-apicatsiddeprecated--切换弃用状态"><code>PUT /api/cats/{id}/deprecated</code> — 切换弃用状态</a></h3>
+<p>将文档标记为弃用，或取消弃用标记。</p>
+<p><strong>需要认证</strong>（<code>doc:deprecate</code> 权限）。</p>
+<p><strong>路径参数</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>参数</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>id</code></td><td><code>string</code></td><td>文档 ID</td></tr>
+</tbody></table>
+</div>
+<p><strong>请求体</strong></p>
+<pre><code class="language-json">{
+  "deprecated": true
+}
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>deprecated</code></td><td><code>bool</code></td><td>是</td><td><code>true</code> 标记弃用，<code>false</code> 取消弃用</td></tr>
+</tbody></table>
+</div>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl -X PUT http://127.0.0.1:3001/api/cats/1/deprecated \
+  -H 'Content-Type: application/json' \
+  -H 'X-Session-Token: &lt;admin-token&gt;' \
+  -d '{"deprecated":true}'
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{ "success": true }
+</code></pre>
+<hr />
+<h3 id="put-apicatsiddeleted--软删除文档"><a class="header" href="#put-apicatsiddeleted--软删除文档"><code>PUT /api/cats/{id}/deleted</code> — 软删除文档</a></h3>
+<p>将文档标记为已删除（软删除，不删除实际文件）。</p>
+<p><strong>需要认证</strong>（<code>doc:delete</code> 权限）。</p>
+<p><strong>路径参数</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>参数</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>id</code></td><td><code>string</code></td><td>文档 ID</td></tr>
+</tbody></table>
+</div>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl -X PUT http://127.0.0.1:3001/api/cats/1/deleted \
+  -H 'X-Session-Token: &lt;admin-token&gt;'
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{ "success": true }
+</code></pre>
+<hr />
+<h3 id="put-apicatsidlock--锁定解锁文档"><a class="header" href="#put-apicatsidlock--锁定解锁文档"><code>PUT /api/cats/{id}/lock</code> — 锁定/解锁文档</a></h3>
+<p>锁定后非管理员无法弃用或恢复文档。已弃用且锁定的文档不可恢复，但可以删除。</p>
+<p><strong>需要认证</strong>（管理员）。</p>
+<p><strong>路径参数</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>参数</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>id</code></td><td><code>string</code></td><td>文档 ID</td></tr>
+</tbody></table>
+</div>
+<p><strong>请求体</strong></p>
+<pre><code class="language-json">{
+  "locked": true
+}
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>locked</code></td><td><code>bool</code></td><td>是</td><td><code>true</code> 锁定，<code>false</code> 解锁</td></tr>
+</tbody></table>
+</div>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl -X PUT http://127.0.0.1:3001/api/cats/1/lock \
+  -H 'Content-Type: application/json' \
+  -H 'X-Session-Token: &lt;admin-token&gt;' \
+  -d '{"locked":true}'
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{ "success": true }
+</code></pre>
+<hr />
+<h2 id="管理-api"><a class="header" href="#管理-api">管理 API</a></h2>
+<h3 id="get-apiadminsequence--获取登录序列"><a class="header" href="#get-apiadminsequence--获取登录序列"><code>GET /api/admin/sequence</code> — 获取登录序列</a></h3>
+<p>返回 <code>config/sequence.json</code> 中定义的管理员登录按钮序列。</p>
+<p><strong>无需认证。</strong></p>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl http://127.0.0.1:3001/api/admin/sequence
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{ "sequence": [1, 2, 3, 2, 3, 4] }
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>sequence</code></td><td><code>number[]</code></td><td>按钮点击序列</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="post-apiadminsession--创建管理员会话"><a class="header" href="#post-apiadminsession--创建管理员会话"><code>POST /api/admin/session</code> — 创建管理员会话</a></h3>
+<p>验证序列码正确后，创建管理员会话并返回 token。</p>
+<p><strong>无需认证</strong>（但前端需提供正确的序列码）。</p>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl -X POST http://127.0.0.1:3001/api/admin/session
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{ "token": "a1b2c3d4-e5f6-7890-abcd-ef1234567890" }
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>token</code></td><td><code>string</code></td><td>会话令牌</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>说明</strong>：<code>auth-simple</code> 模式返回 UUID token；<code>auth-db</code> 模式返回 JWT token（有效期 24 小时）。</p>
+</blockquote>
+<hr />
+<h3 id="get-apiadminsession--检查会话"><a class="header" href="#get-apiadminsession--检查会话"><code>GET /api/admin/session</code> — 检查会话</a></h3>
+<p>检查当前会话是否有效（是否为管理员）。</p>
+<p><strong>请求头</strong></p>
+<pre><code>X-Session-Token: &lt;token&gt;
+</code></pre>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl http://127.0.0.1:3001/api/admin/session \
+  -H 'X-Session-Token: a1b2c3d4-e5f6-7890-abcd-ef1234567890'
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{ "isAdmin": true }
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>isAdmin</code></td><td><code>bool</code></td><td>当前会话是否为管理员</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="delete-apiadminsession--销毁会话"><a class="header" href="#delete-apiadminsession--销毁会话"><code>DELETE /api/admin/session</code> — 销毁会话</a></h3>
+<p>登出管理员，销毁当前会话。</p>
+<p><strong>请求头</strong></p>
+<pre><code>X-Session-Token: &lt;token&gt;
+</code></pre>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl -X DELETE http://127.0.0.1:3001/api/admin/session \
+  -H 'X-Session-Token: a1b2c3d4-e5f6-7890-abcd-ef1234567890'
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{ "success": true }
+</code></pre>
+<hr />
+<h2 id="认证-api"><a class="header" href="#认证-api">认证 API</a></h2>
+<blockquote>
+<p>以下接口仅在 <code>auth-db</code> 模式下可用（<code>config/auth.json</code> 存在时）。</p>
+</blockquote>
+<h3 id="post-apiauthregister--用户注册"><a class="header" href="#post-apiauthregister--用户注册"><code>POST /api/auth/register</code> — 用户注册</a></h3>
+<p>注册新用户，默认赋予 <code>viewer</code> 角色。</p>
+<p><strong>无需认证。</strong></p>
+<p><strong>请求体</strong></p>
+<pre><code class="language-json">{
+  "username": "alice",
+  "password": "1234"
+}
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>username</code></td><td><code>string</code></td><td>是</td><td>用户名，不可为空</td></tr>
+<tr><td><code>password</code></td><td><code>string</code></td><td>是</td><td>密码，至少 4 个字符</td></tr>
+</tbody></table>
+</div>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl -X POST http://127.0.0.1:3001/api/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"alice","password":"1234"}'
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{
+  "success": true,
+  "data": {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "username": "alice",
+    "roles": ["viewer"]
+  }
+}
+</code></pre>
+<p><strong>响应字段</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>data.id</code></td><td><code>string</code></td><td>用户唯一 ID（UUID v4）</td></tr>
+<tr><td><code>data.username</code></td><td><code>string</code></td><td>用户名</td></tr>
+<tr><td><code>data.roles</code></td><td><code>string[]</code></td><td>角色列表</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="post-apiauthlogin--用户登录"><a class="header" href="#post-apiauthlogin--用户登录"><code>POST /api/auth/login</code> — 用户登录</a></h3>
+<p>验证用户名密码，返回 JWT token。</p>
+<p><strong>无需认证。</strong></p>
+<p><strong>请求体</strong></p>
+<pre><code class="language-json">{
+  "username": "alice",
+  "password": "1234"
+}
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>username</code></td><td><code>string</code></td><td>是</td><td>用户名</td></tr>
+<tr><td><code>password</code></td><td><code>string</code></td><td>是</td><td>密码</td></tr>
+</tbody></table>
+</div>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl -X POST http://127.0.0.1:3001/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"alice","password":"1234"}'
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIs...",
+    "user": {
+      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "username": "alice",
+      "roles": ["viewer"]
+    }
+  }
+}
+</code></pre>
+<p><strong>响应字段</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>data.token</code></td><td><code>string</code></td><td>JWT 访问令牌（7 天有效）</td></tr>
+<tr><td><code>data.user.id</code></td><td><code>string</code></td><td>用户 ID</td></tr>
+<tr><td><code>data.user.username</code></td><td><code>string</code></td><td>用户名</td></tr>
+<tr><td><code>data.user.roles</code></td><td><code>string[]</code></td><td>用户角色列表</td></tr>
+</tbody></table>
+</div>
+<p><strong>错误响应</strong>（401）</p>
+<pre><code class="language-json">{ "success": false, "message": "invalid username or password" }
+</code></pre>
+<hr />
+<h3 id="get-apiauthme--当前用户信息"><a class="header" href="#get-apiauthme--当前用户信息"><code>GET /api/auth/me</code> — 当前用户信息</a></h3>
+<p>使用 JWT token 获取当前登录用户的身份信息。</p>
+<p><strong>需要认证。</strong></p>
+<p><strong>请求头</strong></p>
+<pre><code>Authorization: Bearer &lt;jwt-token&gt;
+</code></pre>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl http://127.0.0.1:3001/api/auth/me \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIs...'
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{
+  "success": true,
+  "data": {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "username": "alice",
+    "roles": ["viewer"]
+  }
+}
+</code></pre>
+<p><strong>错误响应</strong>（401）</p>
+<pre><code class="language-json">{ "success": false, "message": "unauthorized" }
+</code></pre>
+<hr />
+<h2 id="国际化-api"><a class="header" href="#国际化-api">国际化 API</a></h2>
+<h3 id="get-apilocales--可用语言列表"><a class="header" href="#get-apilocales--可用语言列表"><code>GET /api/locales</code> — 可用语言列表</a></h3>
+<p>返回所有已安装的语言包列表和默认语言。</p>
+<p><strong>无需认证。</strong></p>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl http://127.0.0.1:3001/api/locales
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{
+  "success": true,
+  "data": [
+    { "code": "zh-CN", "name": "简体中文", "dir": "ltr" },
+    { "code": "en", "name": "English", "dir": "ltr" }
+  ],
+  "default": "zh-CN"
+}
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>data</code></td><td><code>array</code></td><td>语言列表</td></tr>
+<tr><td><code>data[].code</code></td><td><code>string</code></td><td>语言代码（locale）</td></tr>
+<tr><td><code>data[].name</code></td><td><code>string</code></td><td>语言显示名称</td></tr>
+<tr><td><code>data[].dir</code></td><td><code>string</code></td><td>文字方向</td></tr>
+<tr><td><code>default</code></td><td><code>string</code></td><td>默认语言代码</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="get-apilocaleslocale--获取翻译包"><a class="header" href="#get-apilocaleslocale--获取翻译包"><code>GET /api/locales/{locale}</code> — 获取翻译包</a></h3>
+<p>获取指定语言的完整翻译内容。</p>
+<p><strong>无需认证。</strong></p>
+<p><strong>路径参数</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>参数</th><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>locale</code></td><td><code>string</code></td><td>语言代码，如 <code>zh-CN</code>、<code>en</code></td></tr>
+</tbody></table>
+</div>
+<p><strong>请求示例</strong></p>
+<pre><code class="language-bash">curl http://127.0.0.1:3001/api/locales/zh-CN
+</code></pre>
+<p><strong>响应示例</strong></p>
+<pre><code class="language-json">{
+  "success": true,
+  "data": {
+    "@meta.name": "简体中文",
+    "@meta.dir": "ltr",
+    "site.title": "25 电科 3 班待办事项清单",
+    "doc.status.loading": "加载中...",
+    "doc.action.upload": "上传"
+  }
+}
+</code></pre>
+<hr />
+<h2 id="api-速查表"><a class="header" href="#api-速查表">API 速查表</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>方法</th><th>路径</th><th>认证</th><th>权限</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>GET</code></td><td><code>/api/cats</code></td><td>否</td><td>-</td><td>列出文档</td></tr>
+<tr><td><code>GET</code></td><td><code>/api/cats/{id}</code></td><td>否</td><td>-</td><td>获取单篇文档</td></tr>
+<tr><td><code>POST</code></td><td><code>/api/cats</code></td><td>是</td><td><code>doc:write</code></td><td>创建文档</td></tr>
+<tr><td><code>PUT</code></td><td><code>/api/cats/{id}/deprecated</code></td><td>是</td><td><code>doc:deprecate</code></td><td>切换弃用</td></tr>
+<tr><td><code>PUT</code></td><td><code>/api/cats/{id}/deleted</code></td><td>是</td><td><code>doc:delete</code></td><td>软删除</td></tr>
+<tr><td><code>PUT</code></td><td><code>/api/cats/{id}/lock</code></td><td>是（管理员）</td><td>-</td><td>锁定/解锁</td></tr>
+<tr><td><code>GET</code></td><td><code>/api/admin/sequence</code></td><td>否</td><td>-</td><td>获取登录序列</td></tr>
+<tr><td><code>POST</code></td><td><code>/api/admin/session</code></td><td>否</td><td>-</td><td>创建管理员会话</td></tr>
+<tr><td><code>GET</code></td><td><code>/api/admin/session</code></td><td>否</td><td>-</td><td>检查会话</td></tr>
+<tr><td><code>DELETE</code></td><td><code>/api/admin/session</code></td><td>否</td><td>-</td><td>销毁会话</td></tr>
+<tr><td><code>POST</code></td><td><code>/api/auth/register</code></td><td>否</td><td>-</td><td>用户注册</td></tr>
+<tr><td><code>POST</code></td><td><code>/api/auth/login</code></td><td>否</td><td>-</td><td>用户登录</td></tr>
+<tr><td><code>GET</code></td><td><code>/api/auth/me</code></td><td>是</td><td>-</td><td>当前用户信息</td></tr>
+<tr><td><code>GET</code></td><td><code>/api/locales</code></td><td>否</td><td>-</td><td>语言列表</td></tr>
+<tr><td><code>GET</code></td><td><code>/api/locales/{locale}</code></td><td>否</td><td>-</td><td>翻译包</td></tr>
+</tbody></table>
+</div>
+<blockquote>
+<p><strong>注</strong>：<code>/api/auth/*</code> 系列接口仅在 <code>auth-db</code> 模式下可用（<code>config/auth.json</code> 存在时）。</p>
+</blockquote>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="configuration.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="storage.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="configuration.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="storage.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
