@@ -1,0 +1,29 @@
+[package]
+name = "ducia-server"
+version.workspace = true
+edition.workspace = true
+description = "Ducia listing framework server binary"
+license.workspace = true
+publish = false
+
+[[bin]]
+name = "ducia-server"
+path = "src/main.rs"
+
+[dependencies]
+ducia-core = { version = "0.2.0", path = "../ducia-core" }
+ducia-auth-simple = { version = "0.2.0", path = "../plugins/auth-simple" }
+ducia-auth-db = { version = "0.2.0", path = "../plugins/auth-db" }
+ducia-storage-fs = { version = "0.2.0", path = "../plugins/storage-fs" }
+ducia-storage-sqlite = { version = "0.2.0", path = "../plugins/storage-sqlite" }
+actix-web = "4"
+actix-cors = "0.7"
+actix-files = "0.6"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+tokio = { version = "1", features = ["full"] }
+uuid = { version = "1", features = ["v4"] }
+
+[dev-dependencies]
+tempfile = "3"

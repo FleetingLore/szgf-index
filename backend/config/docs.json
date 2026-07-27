@@ -1,0 +1,13 @@
+{
+  "next_id": 2,
+  "docs": {
+    "1": {
+      "id": "1",
+      "title": "测试文档",
+      "file": "1.md",
+      "created_at": 1782165764446,
+      "deprecated": false,
+      "deleted": false
+    }
+  }
+}

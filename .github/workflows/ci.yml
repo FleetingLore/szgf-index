@@ -1,0 +1,74 @@
+name: CI
+
+on:
+    push:
+        branches: [main, indev]
+    pull_request:
+        branches: [main]
+    workflow_dispatch: # 允许手动触发
+
+jobs:
+    # ─── 后端编译检查 ───
+    backend:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install Rust
+              uses: dtolnay/rust-toolchain@stable
+
+            - name: Cache cargo
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.cargo/registry
+                      ~/.cargo/git
+                      backend/target
+                  key: cargo-${{ runner.os }}-${{ hashFiles('backend/**/Cargo.toml') }}
+
+            - name: cargo check
+              run: cargo check
+              working-directory: backend/server
+
+            - name: cargo test
+              run: cargo test
+              working-directory: backend/server
+
+    # ─── 前端编译检查 ───
+    frontend:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Cache npm
+              uses: actions/cache@v4
+              with:
+                  path: ~/.npm
+                  key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+            - run: npm ci
+            - run: npm run build
+
+    # ─── Docker 镜像构建验证 ───
+    docker:
+        runs-on: ubuntu-latest
+        needs: [backend, frontend]
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Build Docker image
+              run: docker compose build
+
+    # ─── 手动确认部署（仅 indev/main 分支 push 时） ───
+    approve-deploy:
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/indev')
+        runs-on: ubuntu-latest
+        needs: [docker]
+        environment: production # 需要手动在仓库 Settings → Environments 创建
+        steps:
+            - name: Approved
+              run: echo "Deployment approved — ready to deploy"

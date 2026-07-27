@@ -1,0 +1,24 @@
+{
+  "roles": {
+    "superadmin": {
+      "permissions": ["*"],
+      "extends": ["admin"]
+    },
+    "admin": {
+      "permissions": ["doc:delete", "user:manage", "config:write"],
+      "extends": ["editor"]
+    },
+    "editor": {
+      "permissions": ["doc:write", "doc:deprecate"],
+      "extends": ["viewer"]
+    },
+    "viewer": {
+      "permissions": ["doc:read"],
+      "extends": []
+    },
+    "anonymous": {
+      "permissions": ["doc:read"],
+      "extends": []
+    }
+  }
+}

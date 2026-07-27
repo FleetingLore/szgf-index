@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Running pre-push checks: build frontend and backend"
+
+# Build front-end
+if command -v npm >/dev/null 2>&1; then
+  echo "-> Building frontend..."
+  npm run build || { echo "Frontend build failed"; exit 1; }
+else
+  echo "npm not found; skipping frontend build"
+fi
+
+# Build backend
+if [ -d backend/server ]; then
+  echo "-> Building backend..."
+  (cd backend/server && cargo check) || { echo "Backend check failed"; exit 1; }
+else
+  echo "backend/server not found; skipping backend build"
+fi
+
+echo "Pre-push checks passed."

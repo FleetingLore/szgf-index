@@ -1,0 +1,17 @@
+[package]
+name = "ducia-storage-fs"
+version.workspace = true
+edition.workspace = true
+description = "Filesystem storage plugin for ducia (JSON index + Markdown files)"
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["ducia", "storage", "filesystem", "plugin"]
+categories = ["filesystem"]
+
+[dependencies]
+ducia-core = { version = "0.2.0", path = "../../ducia-core" }
+async-trait = "0.1"
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

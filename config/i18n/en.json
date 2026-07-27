@@ -1,0 +1,35 @@
+{
+    "@meta.name": "English",
+    "@meta.dir": "ltr",
+
+    "site.title": "25 ECE 3 Todo List",
+
+    "doc.status.loading": "Loading...",
+    "doc.status.empty": "No documents yet, click upload",
+    "doc.status.deprecated": "This document is deprecated",
+    "doc.status.locked": "Document locked",
+    "doc.status.content_lost": "Document content lost",
+
+    "doc.action.restore": "Restore",
+    "doc.action.delete": "Delete",
+    "doc.action.confirm_delete": "Confirm Delete",
+    "doc.action.mark_deprecated": "Mark Deprecated",
+    "doc.action.download": "Download",
+    "doc.action.upload": "Upload",
+    "doc.action.lock": "Lock",
+    "doc.action.unlock": "Unlock",
+
+    "doc.upload.only_md": "Please upload .md files only",
+    "doc.upload.title_hint": "Upload Document",
+
+    "admin.title": "Admin Panel",
+    "admin.button_home": "Home",
+    "admin.error.invalid_seq": "Invalid sequence, please retry",
+
+    "auth.session_expired": "Session expired",
+    "auth.login_success": "Login successful",
+
+    "error.not_found": "Document not found",
+    "error.server_error": "Server error",
+    "error.generic": "Operation failed"
+}

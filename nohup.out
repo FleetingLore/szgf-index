@@ -1,0 +1,16 @@
+I18n: loading from "/Users/corain/RustroverProjects/ducia-listing-framework/config/i18n"
+I18n: found file "/Users/corain/RustroverProjects/ducia-listing-framework/config/i18n/zh-CN.json"
+I18n: found file "/Users/corain/RustroverProjects/ducia-listing-framework/config/i18n/en.json"
+I18n: loaded 2 language packs
+Using filesystem storage
+Using auth-db (database authentication)
+Ducia server on http://127.0.0.1:3001
+Error: Os { code: 48, kind: AddrInUse, message: "Address already in use" }
+I18n: loading from "/Users/corain/RustroverProjects/ducia-listing-framework/config/i18n"
+I18n: found file "/Users/corain/RustroverProjects/ducia-listing-framework/config/i18n/zh-CN.json"
+I18n: found file "/Users/corain/RustroverProjects/ducia-listing-framework/config/i18n/en.json"
+I18n: loaded 2 language packs
+Using filesystem storage
+Using auth-db (database authentication)
+Ducia server on http://127.0.0.1:3001
+Error: Os { code: 48, kind: AddrInUse, message: "Address already in use" }

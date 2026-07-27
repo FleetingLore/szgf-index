@@ -1,0 +1,10 @@
+services:
+    ducia:
+        build: .
+        ports:
+            - "3001:3001"
+        volumes:
+            - ./config:/app/config:ro
+            - ./docs:/app/docs
+            - ./data:/app/data
+        restart: unless-stopped

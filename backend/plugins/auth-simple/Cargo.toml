@@ -1,0 +1,19 @@
+[package]
+name = "ducia-auth-simple"
+version.workspace = true
+edition.workspace = true
+description = "Simple sequence-code based auth plugin for ducia"
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["ducia", "auth", "plugin"]
+categories = ["authentication"]
+
+[dependencies]
+ducia-core = { version = "0.2.0", path = "../../ducia-core" }
+async-trait = "0.1"
+anyhow = "1"
+uuid = { version = "1", features = ["v4"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["sync"] }

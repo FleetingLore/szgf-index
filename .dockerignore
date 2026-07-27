@@ -1,0 +1,12 @@
+node_modules/
+dist/
+target/
+data/
+logs/
+*.log
+.DS_Store
+.github/
+.idea/
+.vscode/
+book/
+*.pid
